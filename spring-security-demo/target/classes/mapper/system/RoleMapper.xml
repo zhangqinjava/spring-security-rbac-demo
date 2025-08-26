@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.securitydemo.mapper.system.RoleMapper">
+    <insert id="insert">
+       insert into sys_user_role
+       <trim prefix="(" suffix=")" suffixOverrides=",">
+           <if test="username != null">username,</if>
+           <if test="roleId != null">role_id,</if>
+       </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null">#{username},</if>
+            <if test="roleId != null">#{roleId},</if>
+        </trim>
+    </insert>
+    <insert id="save">
+        insert into sys_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name!= null">name,</if>
+            <if test="status != null">status,</if>
+            <if test="type != null">type,</if>
+            <if test="creator != null">creator,</if>
+            create_time,
+            update_time,
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="status != null">#{status},</if>
+            <if test="type != null">#{type},</if>
+            <if test="creator != null">#{creator},</if>
+            current_timestamp,
+            current_timestamp,
+        </trim>
+    </insert>
+    <insert id="addMenuRole">
+        insert into sys_menu_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">role_id,</if>
+            <if test="menuId != null">menu_id,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">#{roleId},</if>
+            <if test="menuId != null">#{menuId},</if>
+        </trim>
+    </insert>
+    <update id="update">
+        update sys_user_role
+        <set>
+            <if test="username != null">username=#{username},</if>
+            <if test="roleId != null">role_id=#{roleId},</if>
+        </set>
+        <where>
+            <if test="username != null">and username=#{username}</if>
+            <if test="id != null">and id=#{id}</if>
+        </where>
+    </update>
+    <update id="modify">
+        update sys_role
+        <set>
+            <if test="name != null">name=#{name},</if>
+            <if test="status != null">status=#{status},</if>
+            <if test="type != null">type=#{type},</if>
+            <if test="creator != null">creator=#{creator},</if>
+            update_time=current_timestamp
+        </set>
+        <where>
+            <if test="id != null">id=#{id}</if>
+        </where>
+    </update>
+    <delete id="delete">
+        delete from sys_user_role
+        <include refid="where_user_id"/>
+    </delete>
+    <delete id="deleteMenuRole">
+        delete from sys_menu_role
+        <where>
+            <if test="menuId != null">and menu_id=#{menuId}</if>
+            <if test="roleId != null">and role_id=#{roleId}</if>
+
+        </where>
+    </delete>
+    <select id="query" resultType="com.example.securitydemo.bean.vo.system.SysUserRole">
+        select id,role_id,username from sys_user_role
+        <include refid="where_user_id"/>
+    </select>
+    <select id="find" resultType="com.example.securitydemo.bean.vo.system.SysRole">
+        select id,name,type,status,create_time,update_time from sys_role
+        <include refid="where_role_id"/>
+    </select>
+    <select id="findMenuRole" resultType="com.example.securitydemo.bean.vo.system.SysMenuRoleVo">
+        select  distinct  m.id,m.parent_id,m.name,m.chinese_name,m.sort,mr1.role_id,mr1.menu_id
+        from sys_menu m
+        left join  sys_menu_role mr on m.id=mr.menu_id
+        left join sys_menu_role mr1 on m.id=mr1.menu_id and mr1.role_id=#{roleId}
+        <where>
+            type=1
+            <if test="currRoleId != null">
+                and mr.role_id=#{currRoleId}
+            </if>
+        </where>
+    </select>
+
+    <sql id="where_user_id">
+        <where>
+            <if test="id != null">and id=#{id}</if>
+            <if test="username != null">and username=#{username}</if>
+            <if test="roleId != null">and role_id=#{roleId}</if>
+        </where>
+    </sql>
+    <sql id="where_role_id">
+        <where>
+            <if test="id != null">and id=#{id}</if>
+            <if test="name != null"> and name =#{name}</if>
+            <if test="status != null"> and status=#{status}</if>
+            <if test="type != null">and type =#{type}</if>
+        </where>
+    </sql>
+</mapper>
