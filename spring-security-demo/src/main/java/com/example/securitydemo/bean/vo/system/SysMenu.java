@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class SysMenu {
-    @TableId(type = IdType.AUTO)
     private Integer id;
     /**
      * 权限ID
