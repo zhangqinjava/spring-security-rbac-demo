@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public R handleRunTimeException(RuntimeException e) {
-        log.info("当前用户:{}操作运营平台报错:{}", SecurityUserUtils.getUser().getUsername(),e.getMessage());
+        log.info("当前用户:{}操作运营平台报错:{}", SecurityUserUtils.getUser().getUsername(),e.toString());
         return R.fail(500,"服务器运行异常");
     }
 

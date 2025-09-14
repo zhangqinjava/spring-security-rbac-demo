@@ -1,9 +1,8 @@
 package com.example.securitydemo.common.result;
 
-import java.io.Serializable;
 
 public class R <T> {
-    private int code;
+    private Integer code;
     private String  msg;
     private T data;
     public R() {
@@ -34,6 +33,9 @@ public class R <T> {
     }
     public static R fail(int code, String msg) {
         return new R(code, msg,null);
+    }
+    public static R fail(String msg, Object data) {
+        return new R(CodeEnum.ERROR.getCode(), msg,data);
     }
 
     public int getCode() {

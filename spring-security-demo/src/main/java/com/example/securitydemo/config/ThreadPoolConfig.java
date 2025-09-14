@@ -16,13 +16,15 @@ import java.util.concurrent.TimeUnit;
 public class ThreadPoolConfig {
     public  static  final String THREAD_POOL_NAME = "THREAD_POOL_NAME";
     public  static  final String ASSET_MANAGE_EXECUTOR_ASYNC = "ASSET_MANAGE_EXECUTOR_ASYNC";
+    public static  final  String THREAD_POLL_EXPORT_NAME="THREAD_POLL_EXPORT_NAME";
+    @Bean(THREAD_POLL_EXPORT_NAME)
     public ThreadPoolExecutor threadPoolExecutor() {
         return new ThreadPoolExecutor(
                 10,
                 20,
                 10,
                 TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue(50),
+                new LinkedBlockingQueue(100),
                 new MyThreadFactory(),
                 new ThreadPoolExecutor.CallerRunsPolicy());
     }

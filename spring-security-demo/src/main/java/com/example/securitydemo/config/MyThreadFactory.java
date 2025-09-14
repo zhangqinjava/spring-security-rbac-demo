@@ -17,7 +17,7 @@ public class MyThreadFactory implements ThreadFactory {
      */
     private final AtomicInteger threadNumber = new AtomicInteger(1);
     public Thread newThread(Runnable r) {
-        Thread t = new Thread(r, "thread-" + threadNumber.getAndIncrement());
+        Thread t = new Thread(r, "thread-"+System.currentTimeMillis() + threadNumber.getAndIncrement());
         t.setDaemon(false);
         return t;
     }

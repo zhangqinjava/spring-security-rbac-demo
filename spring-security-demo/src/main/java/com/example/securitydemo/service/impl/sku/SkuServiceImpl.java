@@ -1,6 +1,8 @@
 package com.example.securitydemo.service.impl.sku;
 
+import com.example.securitydemo.bean.dto.sku.CategoryDto;
 import com.example.securitydemo.bean.vo.sku.Category;
+import com.example.securitydemo.bean.vo.sku.CategoryExcel;
 import com.example.securitydemo.mapper.sku.SkuMapper;
 import com.example.securitydemo.service.sku.SkuService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +20,13 @@ public class SkuServiceImpl implements SkuService {
     @Autowired
     private SkuMapper skuMapper;
     @Override
-    public List<Category> query(Category category) {
-        log.info("query  sku type:{}", category);
-        List<Category> list = skuMapper.query(category);
+    public List<Category> query(CategoryDto categoryDto) {
+        log.info("query  sku type:{}", categoryDto);
+        List<Category> list = skuMapper.query(categoryDto);
         if(CollectionUtils.isEmpty(list)){
             return null;
         }
-        if(Stream.of(category.getId(),category.getParentId()).allMatch(Objects::isNull)){
+        if(Stream.of(categoryDto.getId(),categoryDto.getParentId()).allMatch(Objects::isNull)){
             return builderAll(list);
         }
         return builderSub(list);
@@ -47,7 +49,7 @@ public class SkuServiceImpl implements SkuService {
     public boolean delete(Integer id) {
         log.info("delete  sku type:{}", id);
         //删除我们需要查询当前大类下面的所有的子类，并且将其删除
-        List<Category> list = skuMapper.query(Category.builder().build());
+        List<Category> list = skuMapper.query(CategoryDto.builder().build());
         if(CollectionUtils.isEmpty(list)){
             return false;
         }
@@ -64,11 +66,28 @@ public class SkuServiceImpl implements SkuService {
 
     @Override
     public List<Category> list() {
-        List<Category> list = skuMapper.query(Category.builder().build());
+        List<Category> list = skuMapper.query(CategoryDto.builder().build());
         if(CollectionUtils.isEmpty(list)){
             return null;
         }
         return list;
+    }
+
+    @Override
+    public List<CategoryExcel> listExcel(Category category) {
+        log.info("listExcel  sku type:{}", category);
+        List<Category> list = this.query(CategoryDto.builder().id(category.getId()).name(category.getName()).parentId(category.getParentId()).build());
+        List<CategoryExcel> categoryExcelList = new ArrayList<>();
+        this.flattenTree(list, categoryExcelList ,list.get(0).getParentId());
+        return categoryExcelList;
+    }
+    public void flattenTree(List<Category> list,List<CategoryExcel> flat,int level) {
+        for (Category node : list) {
+            flat.add(new CategoryExcel(node.getId(),node.getName(), node.getParentId(),  level));
+            if (node.getChildren() != null && !node.getChildren().isEmpty()) {
+                flattenTree(node.getChildren(), flat, level + 1);
+            }
+        }
     }
 
     /**
@@ -115,7 +134,7 @@ public class SkuServiceImpl implements SkuService {
             return null;
         }
         list.stream().filter(Objects::nonNull).filter(c->Objects.nonNull(c.getId())).forEach(category -> {
-            category.setChildren(builderSub(skuMapper.query(Category.builder().parentId(category.getId()).build())));
+            category.setChildren(builderSub(skuMapper.query(CategoryDto.builder().parentId(category.getId()).build())));
         });
         return list;
 
