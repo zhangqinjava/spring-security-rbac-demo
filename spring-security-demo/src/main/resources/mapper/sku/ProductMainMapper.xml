@@ -42,7 +42,7 @@
     </delete>
 
     <select id="query" resultType="com.example.securitydemo.bean.vo.sku.ProductMain">
-        select id,name,description,status,updated_at,created_at from  product_main
+        select id,name,description,category_id,status,updated_at,created_at from  product_main
         <where>
             <if test="id != null"> and id=#{id}</if>
             <if test="name != null">and name=#{name}</if>
