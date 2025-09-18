@@ -11,6 +11,7 @@
             <if test="categoryId != null">category_id,</if>
             <if test="description != null">description,</if>
             <if test="status != null">status,</if>
+            created_at,updated_at
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -19,6 +20,7 @@
             <if test="categoryId != null">#{categoryId},</if>
             <if test="description != null">#{description},</if>
             <if test="status != null">#{status},</if>
+            current_timestamp,current_timestamp
         </trim>
     </insert>
     <update id="update">
@@ -28,7 +30,7 @@
             <if test="categoryId != null">category_id=#{categoryId},</if>
             <if test="description != null">description=#{description},</if>
             <if test="status != null">status=#{status},</if>
-            updatedAt=current_timestamp,
+            updated_at=current_timestamp,
         </set>
         <where>
             <if test="id != null">id=#{id}</if>

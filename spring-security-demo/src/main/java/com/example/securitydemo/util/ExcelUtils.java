@@ -6,9 +6,13 @@ import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.example.securitydemo.bean.vo.common.ExcelReadResult;
 import com.example.securitydemo.config.converter.StringToIntegerConverter;
 import org.apache.poi.ss.formula.functions.T;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,10 +45,22 @@ public class ExcelUtils {
         // 避免文件名中文乱码
         String encodedFileName = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
+        WriteCellStyle headStyle = new WriteCellStyle();
+        headStyle.setHorizontalAlignment(HorizontalAlignment.CENTER); // 头部居中
+        WriteFont headFont = new WriteFont();
+        headFont.setBold(true);
+        headFont.setFontName("微软雅黑");
+        headFont.setFontHeightInPoints((short)10);
+        headStyle.setWriteFont(headFont);
+        // 设置内容的样式
+        WriteCellStyle contentStyle = new WriteCellStyle();
+        contentStyle.setHorizontalAlignment(HorizontalAlignment.LEFT); // 内容居中
 
+        HorizontalCellStyleStrategy styleStrategy =
+                new HorizontalCellStyleStrategy(headStyle, contentStyle);
         // 写入数据
         EasyExcel.write(response.getOutputStream(), clazz)
-                .autoCloseStream(Boolean.FALSE)
+                .registerWriteHandler(styleStrategy)
                 .sheet(sheetName==null?"sheet1":sheetName)
                 .doWrite(data);
     }

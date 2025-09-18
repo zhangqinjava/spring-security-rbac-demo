@@ -1,55 +1,72 @@
 package com.example.securitydemo.controller.sku;
 
-import com.example.securitydemo.bean.dto.sku.CategoryDto;
-import com.example.securitydemo.bean.vo.sku.Category;
-import com.example.securitydemo.bean.vo.sku.CategoryExcel;
-import com.example.securitydemo.common.result.Page;
+import com.example.securitydemo.bean.dto.sku.SkuDto;
+import com.example.securitydemo.bean.vo.sku.Sku;
 import com.example.securitydemo.common.result.R;
 import com.example.securitydemo.service.sku.SkuService;
 import com.example.securitydemo.util.ExcelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
-@Slf4j
 @RestController
 @RequestMapping("/sku")
+@Slf4j
 public class SkuController {
     @Autowired
     private SkuService skuService;
     @GetMapping("/query")
-    public Page query(CategoryDto categoryDto){
-        return Page.ok(skuService.query(categoryDto),1,20);
+    public R query(SkuDto skuDto) {
+        return R.ok(skuService.queryAll(skuDto));
     }
-    @GetMapping("/delete")
-    public R delete(@RequestParam Integer id){
-        return R.ok(skuService.delete(id));
-    }
-    @GetMapping("/save")
-    public R save(Category category){
-        return R.ok(skuService.add(category));
+    @PostMapping("/add")
+    public R add(SkuDto skuDto,
+                 @RequestParam("files") List<MultipartFile> files) throws Exception {
+        if(Objects.nonNull(files)){
+            skuDto.setImage(files.get(0).getBytes());
+        }
+        return R.ok(skuService.save(skuDto));
     }
     @GetMapping("/update")
-    public R update(Category category){
-        return R.ok(skuService.update(category));
+    public R update(SkuDto skuDto) {
+        if (skuService.update(skuDto)) {
+            return R.ok(true);
+        }
+        return R.fail("更新数据有问题");
     }
-    @GetMapping("/list")
-    public R list(Category category){
-        return R.ok(skuService.list());
+    @GetMapping("/delete")
+    public R delete(SkuDto skuDto) {
+        if (skuService.delete(skuDto)) {
+            return R.ok(true);
+        }
+        return R.fail("删除数据有问题");
     }
-    @GetMapping("/export-tree")
-    public void exportTree(HttpServletResponse response, Category category) throws Exception {
-        log.info("export init:{}", category);
-        List<CategoryExcel> categoryExcels = skuService.listExcel(category);
-        log.info("export start:{}", categoryExcels);
-        ExcelUtils.export(response, "商品分类", "分类", categoryExcels, CategoryExcel.class);
-
+    @GetMapping("/image/{id}")
+    public void image(@PathVariable("id") Integer id, HttpServletResponse response) throws IOException {
+        log.info("query sku image:{}",id);
+        List<Sku> skus = skuService.queryAll(SkuDto.builder().id(id).build());
+        byte[] imageBytes = null;
+        if(!CollectionUtils.isEmpty(skus)){
+            imageBytes = skus.get(0).getImage();
+        }
+        response.setContentType("image/jpeg");
+        ServletOutputStream os = response.getOutputStream();
+        os.write(imageBytes);
+        os.flush();
+        os.close();
     }
-
+    @GetMapping("/export")
+public void export(SkuDto skuDto,HttpServletResponse response) throws IOException {
+        log.info("query sku export:{}",skuDto);
+        List<Sku> skus = skuService.queryAll(skuDto);
+        ExcelUtils.export(response,"商品细分","第一页",skus,Sku.class);
+    }
 }

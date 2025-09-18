@@ -1,15 +1,15 @@
 package com.example.securitydemo.mapper.sku;
 
-import com.example.securitydemo.bean.dto.sku.CategoryDto;
-import com.example.securitydemo.bean.vo.sku.Category;
+import com.example.securitydemo.bean.dto.sku.SkuDto;
+import com.example.securitydemo.bean.vo.sku.Sku;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
 public interface SkuMapper {
-    List<Category> query(CategoryDto categoryDto);
-    boolean add(Category category);
-    boolean update(Category category);
+    List<Sku> query(SkuDto skuDto);
+    boolean update(SkuDto skuDto);
     boolean delete(Integer id);
+    boolean insert(SkuDto skuDto);
 }

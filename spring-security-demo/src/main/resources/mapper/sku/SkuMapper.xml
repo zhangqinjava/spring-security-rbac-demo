@@ -3,49 +3,58 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.securitydemo.mapper.sku.SkuMapper">
-    <insert id="add">
-        insert into  category
+    <insert id="insert">
+        insert into product_sku
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
-            <if test="name != null">name,</if>
-            <if test="parentId != null">parent_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="skuName != null">sku_name,</if>
+            <if test="price != null">price,</if>
+            <if test="stock != null">stock,</if>
+            <if test="image != null">image,</if>
             created_at,
             updated_at,
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
-            <if test="name != null">#{name},</if>
-            <if test="parentId != null">#{parentId},</if>
-            current_timestamp,
-            current_timestamp,
+            <if test="productId != null">#{productId},</if>
+            <if test="skuName != null">#{skuName},</if>
+            <if test="price != null">#{price},</if>
+            <if test="stock != null">#{stock},</if>
+            <if test="image != null">#{image},</if>
+            current_timestamp,current_timestamp,
         </trim>
     </insert>
     <update id="update">
-        update category
+        update product_sku
         <set>
-            <if test="id != null">id=#{id},</if>
-            <if test="name != null">name=#{name},</if>
-            <if test="parentId != null">parent_id=#{parentId},</if>
+            <if test="productId != null">product_id=#{productId},</if>
+            <if test="skuName != null">sku_name=#{skuName},</if>
+            <if test="price != null">price=#{price},</if>
+            <if test="stock != null">stock=#{stock},</if>
+            <if test="image != null">image=#{image},</if>
             updated_at=current_timestamp,
         </set>
         <where>
-            <if test="id != null">and id=#{id}</if>
+            <if test="id != null">
+                and id=#{id}
+            </if>
         </where>
     </update>
     <delete id="delete">
-        delete from category
+        delete from product_sku
         <where>
-            <if test="id != null">and id=#{id}</if>
+            <if test="id != null">id=#{id}</if>
         </where>
     </delete>
 
-    <select id="query" resultType="com.example.securitydemo.bean.vo.sku.Category">
-        select id,name,parent_id,created_at,updated_at from category
+    <select id="query" resultType="com.example.securitydemo.bean.vo.sku.Sku">
+        select id,product_id,sku_name,cast(price/100 as DECIMAL(10,2)) as price,stock,image,created_at,updated_at
+        from product_sku
         <where>
             <if test="id != null">and id=#{id}</if>
-            <if test="name != null">and name=#{name}</if>
-            <if test="parentId != null">and parent_id=#{parentId}</if>
+            <if  test="productId != null">and product_id=#{productId}</if>
         </where>
     </select>
 </mapper>

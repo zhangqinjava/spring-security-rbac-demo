@@ -25,7 +25,6 @@ public class JwtUtil {
     private static final String SECRET = "jwtsecretdemo";
     private static final String ISS = "echisan";
 
-
     public static String createTonken(SysUser user, boolean isRememberMe) {
         long expiration = isRememberMe ? EXPIRATION_REMEMBER : EXPIRATION;
         Map<String, Object> map = new HashMap<String,Object>();
