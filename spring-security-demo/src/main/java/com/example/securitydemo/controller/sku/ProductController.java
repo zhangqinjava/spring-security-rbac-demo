@@ -44,7 +44,7 @@ public class ProductController {
             if (data.getCategoryId() == null || "".equals(data.getCategoryId())) {
                 throw new BusiException("商品的父类id不能为空");
             }
-        });
+        },null);
         if (!CollectionUtils.isEmpty(result.getErrorList())){
             return R.fail("当前的数据有问题",result.getErrorList());
         }

@@ -36,6 +36,12 @@ public class SkuDto {
      */
     private byte[] image;
     /**
+     * 图片的url
+     */
+    private String imageUrl;
+    private Integer pageNum=1;
+    private Integer pageSize=20;
+    /**
      * 创建时间
      */
     private String createdAt;

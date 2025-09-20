@@ -33,7 +33,9 @@
             <if test="skuName != null">sku_name=#{skuName},</if>
             <if test="price != null">price=#{price},</if>
             <if test="stock != null">stock=#{stock},</if>
-            <if test="image != null">image=#{image},</if>
+            <if test="imageUrl==null">
+                image=#{image},
+            </if>
             updated_at=current_timestamp,
         </set>
         <where>

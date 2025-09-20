@@ -2,6 +2,8 @@ package com.example.securitydemo.bean.vo.sku;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.converters.bytearray.ByteArrayImageConverter;
+import com.example.securitydemo.config.converter.StringToIntegerConverter;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -21,7 +23,7 @@ public class Sku {
     /**
      * 商品id
      */
-    @ExcelProperty(value = "商品编号",order = 2)
+    @ExcelProperty(value = "商品编号",order = 2,converter = StringToIntegerConverter.class)
     private Integer productId;
     /**
      * 价格
@@ -36,16 +38,16 @@ public class Sku {
     /**
      * 图片地址
      */
-    @ExcelIgnore
+    @ExcelProperty(value = "图片" ,order = 5,converter = ByteArrayImageConverter.class)
     private byte[] image;
     /**
      * 创建时间
      */
-    @ExcelProperty(value = "创建时间",order = 5)
+    @ExcelProperty(value = "创建时间",order = 6)
     private String createdAt;
     /**
      * 更新时间
      */
-    @ExcelProperty(value = "最后更新时间",order = 6)
+    @ExcelProperty(value = "最后更新时间",order = 7)
     private String updatedAt;
 }

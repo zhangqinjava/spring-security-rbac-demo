@@ -1,10 +1,14 @@
 package com.example.securitydemo.controller.system;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.metadata.style.WriteCellStyle;
+import com.alibaba.excel.write.metadata.style.WriteFont;
+import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.example.securitydemo.bean.dto.system.TemplateRequest;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,9 +36,23 @@ public class ExcelTemplateController {
 
         // 空数据
         List<List<String>> data = new ArrayList<>();
+        WriteCellStyle headStyle = new WriteCellStyle();
+        headStyle.setHorizontalAlignment(HorizontalAlignment.CENTER); // 头部居中
+        WriteFont headFont = new WriteFont();
+        headFont.setBold(true);
+        headFont.setFontName("微软雅黑");
+        headFont.setFontHeightInPoints((short)10);
+        headStyle.setWriteFont(headFont);
+        // 设置内容的样式
+        WriteCellStyle contentStyle = new WriteCellStyle();
+        contentStyle.setHorizontalAlignment(HorizontalAlignment.LEFT); // 内容左对齐
+
+        HorizontalCellStyleStrategy styleStrategy =
+                new HorizontalCellStyleStrategy(headStyle, contentStyle);
 
         // 写出 Excel
         EasyExcel.write(response.getOutputStream())
+                .registerWriteHandler(styleStrategy)
                 .head(head).excelType(ExcelTypeEnum.XLSX)
                 .sheet("导入模板")
                 .doWrite(data);

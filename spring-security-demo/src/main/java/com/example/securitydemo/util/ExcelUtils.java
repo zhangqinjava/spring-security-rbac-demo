@@ -3,7 +3,6 @@ package com.example.securitydemo.util;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.exception.ExcelDataConvertException;
-import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
@@ -11,15 +10,15 @@ import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.example.securitydemo.bean.vo.common.ExcelReadResult;
 import com.example.securitydemo.config.converter.StringToIntegerConverter;
-import org.apache.poi.ss.formula.functions.T;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -52,10 +51,12 @@ public class ExcelUtils {
         headFont.setFontName("微软雅黑");
         headFont.setFontHeightInPoints((short)10);
         headStyle.setWriteFont(headFont);
+        // 设置背景颜色
+        headStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+        headStyle.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
         // 设置内容的样式
         WriteCellStyle contentStyle = new WriteCellStyle();
         contentStyle.setHorizontalAlignment(HorizontalAlignment.LEFT); // 内容居中
-
         HorizontalCellStyleStrategy styleStrategy =
                 new HorizontalCellStyleStrategy(headStyle, contentStyle);
         // 写入数据
@@ -118,12 +119,14 @@ public class ExcelUtils {
      * @param file 上传的文件
      * @param clazz 目标对象类型
      * @param validator 校验逻辑（可选）
+     * @param sheetName sheet名称
      * @return ExcelReadResult<T>
      */
     public static <T> ExcelReadResult<T> readExcel(MultipartFile file,
                                                    Class<T> clazz,
                                                    int headRowNumber,
-                                                   Consumer<T> validator) {
+                                                   Consumer<T> validator,
+                                                   String sheetName) {
         ExcelReadResult<T> result = new ExcelReadResult<>();
         try (InputStream inputStream = file.getInputStream()) {
             //开始读取数据
@@ -141,8 +144,8 @@ public class ExcelUtils {
                             }
                         }
                     })).registerConverter(new StringToIntegerConverter())
-                    .headRowNumber(headRowNumber) // 设置表头行数
-                    .sheet()
+                    .headRowNumber(headRowNumber)// 设置表头行数
+                    .sheet(sheetName==null?"sheet1":sheetName)
                     .doRead();
         } catch (ExcelDataConvertException e) {
             // 转换异常的行号：e.getRowIndex()得到的是从0开始的行索引，所以+1得到Excel行号
